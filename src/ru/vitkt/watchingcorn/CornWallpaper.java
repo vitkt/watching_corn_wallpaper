@@ -1,5 +1,6 @@
 package ru.vitkt.watchingcorn;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -8,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.service.wallpaper.WallpaperService;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -17,6 +19,7 @@ public class CornWallpaper extends WallpaperService {
 
 	@Override
 	public Engine onCreateEngine() {
+
 		return new CornWallpaperEngine();
 	}
 
@@ -34,8 +37,8 @@ public class CornWallpaper extends WallpaperService {
 		 * картинке
 		 */
 		final float LANDSCAPE_VERT_PART_OFFSET = 241f / 540f;
-		final float LANDSCAPE_VERT_PART_SIZE = (540f-241f) / 540f;
-		final float LANDSCAPE_VERT_PART_SIZE_K = (540f-241f) / 907f;
+		final float LANDSCAPE_VERT_PART_SIZE = (540f - 241f) / 540f;
+		final float LANDSCAPE_VERT_PART_SIZE_K = (540f - 241f) / 907f;
 		final float PORTRAIT_VERT_PART_OFFSET = 20f / 540f;
 
 		/*
@@ -48,11 +51,35 @@ public class CornWallpaper extends WallpaperService {
 		 * Изображение кукурузы
 		 */
 		Bitmap _cornBitmap;
+		Bitmap _cornNormal;
+		Bitmap _cornNewYear;
+		boolean nyMode = false;
+
+		void updateFromPreferences() {
+
+			SharedPreferences prefs = PreferenceManager
+					.getDefaultSharedPreferences(CornWallpaper.this);
+
+			nyMode = prefs.getBoolean("cornMode", true);
+			if (nyMode)
+				_cornBitmap = _cornNewYear;
+			else
+				_cornBitmap = _cornNormal;
+
+		}
 
 		public CornWallpaperEngine() {
-			_cornBitmap = BitmapFactory.decodeResource(
+			
+
+			_cornNormal = BitmapFactory.decodeResource(
 					CornWallpaper.this.getResources(),
 					R.drawable.watching_corn_no_eyes);
+			
+			_cornNewYear = BitmapFactory.decodeResource(
+					CornWallpaper.this.getResources(),
+					R.drawable.watching_corn_new_year);
+			
+			updateFromPreferences();
 
 			eyePaint.setStyle(Paint.Style.FILL);
 			eyePaint.setColor(Color.BLACK);
@@ -82,30 +109,31 @@ public class CornWallpaper extends WallpaperService {
 			if (height > width)
 				destHeight = _surfaceHeight;
 			else
-				destHeight = (_surfaceHeight*LANDSCAPE_VERT_PART_SIZE) / LANDSCAPE_VERT_PART_SIZE_K;
+				destHeight = (_surfaceHeight * LANDSCAPE_VERT_PART_SIZE)
+						/ LANDSCAPE_VERT_PART_SIZE_K;
 
 			destWidth = (destHeight / (float) bitmapHeight) * bitmapWidth;
-			
+
 			offsetX = (_surfaceWidth / 2f) - (destWidth / 2f);
-			
-			
-			//offsetY+=20;
+
+			// offsetY+=20;
 			offsetY = (_surfaceHeight / 2f) - (destHeight / 2f);
 			k = (destHeight / (float) bitmapHeight);
-			
-			if (height > width)
-			{
-				offsetY = (_surfaceHeight / 2f) - (destHeight / 2f);
-				offsetY+=20;
-			}
-			else
-				offsetY+=_surfaceHeight*LANDSCAPE_VERT_PART_OFFSET;//(590f - 349f) * k;
-//			else
-//				
-//				offsetY+=height;
 
-		//	p.setAntiAlias(false);
-			
+			if (height > width) {
+				offsetY = (_surfaceHeight / 2f) - (destHeight / 2f);
+				offsetY += 20;
+			} else
+				offsetY += _surfaceHeight * LANDSCAPE_VERT_PART_OFFSET;// (590f
+																		// -
+																		// 349f)
+																		// * k;
+			// else
+			//
+			// offsetY+=height;
+
+			// p.setAntiAlias(false);
+
 			// if (height > bitmapHeight || (height > width)) {
 			// k = (_surfaceHeight / (float) bitmapHeight);
 			//
@@ -192,7 +220,9 @@ public class CornWallpaper extends WallpaperService {
 				if (canvas != null) {
 
 					canvas.drawColor(Color.WHITE);
-Log.i("corn","offx = "+offsetX+" offy = "+offsetY+" destW = "+destWidth+ " destH = "+destHeight);
+					Log.i("corn", "offx = " + offsetX + " offy = " + offsetY
+							+ " destW = " + destWidth + " destH = "
+							+ destHeight);
 					canvas.drawBitmap(_cornBitmap, null, new Rect(
 							(int) offsetX, (int) offsetY,
 							(int) (offsetX + destWidth),
@@ -246,7 +276,7 @@ Log.i("corn","offx = "+offsetX+" offy = "+offsetY+" destW = "+destWidth+ " destH
 
 		@Override
 		public void onVisibilityChanged(boolean visible) {
-
+			updateFromPreferences();
 			super.onVisibilityChanged(visible);
 			this.visible = visible;
 

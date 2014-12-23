@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.vitkt.watchingcorn"
-    android:versionCode="2"
-    android:versionName="1.1" >
+    android:versionCode="3"
+    android:versionName="1.2" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -12,6 +12,7 @@
         android:required="true" />
 
     <application
+        android:hardwareAccelerated="true"
         android:allowBackup="true"
         android:icon="@drawable/logo"
         android:label="@string/app_name"
@@ -29,6 +30,11 @@
                 android:name="android.service.wallpaper"
                 android:resource="@xml/mywallpaper" />
         </service>
+        <activity
+            android:name="ru.vitkt.watchingcorn.CornPreference"
+            android:exported="true"
+            android:label="@string/app_name" >
+        </activity>
     </application>
 
 </manifest>

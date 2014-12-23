@@ -2,5 +2,5 @@
 
     <string name="app_name">Watching Corn</string>
     <string name="description">Кукуруза следит за тобой!</string>
-
+	<string name="new_year_mode">Режим Нового Года</string>
 </resources>

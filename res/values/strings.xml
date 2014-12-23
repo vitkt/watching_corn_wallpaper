@@ -2,5 +2,6 @@
 
     <string name="app_name">Watching Corn</string>
     <string name="description">Corn is watching you!</string>
+    <string name="new_year_mode">Happy New Year!</string>
 
 </resources>
